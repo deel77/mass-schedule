@@ -8,16 +8,16 @@ const DAY_NAMES_SK = [
   "Pondelok",
   "Utorok",
   "Streda",
-  "Stvrtok",
+  "Štvrtok",
   "Piatok",
   "Sobota",
-  "Nedela"
+  "Nedeľa"
 ];
 
 const EVENT_TYPES = [
-  { value: "holy-mass", label: "Sv. omsa" },
-  { value: "confession", label: "Sviatost zmierenia" },
-  { value: "other", label: "Ina udalost" }
+  { value: "holy-mass", key: "eventTypeHolyMass" },
+  { value: "confession", key: "eventTypeConfession" },
+  { value: "other", key: "eventTypeOther" }
 ];
 
 type Parish = { _id: string; name: string; slug: string };
@@ -205,6 +205,14 @@ export function DashboardClient({
   const [loadingWeek, setLoadingWeek] = useState(false);
   const [locale, setLocale] = useState<Locale>("sk");
 
+  const eventTypeLabel = (type: string) => {
+    const match = EVENT_TYPES.find((item) => item.value === type);
+    if (!match) {
+      return type;
+    }
+    return t(locale, match.key, type);
+  };
+
   const selectedParish = useMemo(
     () => parishes.find((parish) => parish._id === selectedParishId),
     [parishes, selectedParishId]
@@ -245,7 +253,7 @@ export function DashboardClient({
       } else {
         setBuilder(buildFromWeek(data, locations, data.week.start_date));
       }
-      setMessage({ type: "success", text: "Week loaded." });
+      setMessage({ type: "success", text: t(locale, "weekLoaded", "Week loaded.") });
     } catch (error: any) {
       setMessage({ type: "error", text: error.message });
     } finally {
@@ -262,7 +270,7 @@ export function DashboardClient({
 
   const resetBuilder = () => {
     setBuilder(buildFromWeek(weekData, locations, weekDate));
-    setMessage({ type: "info", text: "Editor reset." });
+    setMessage({ type: "info", text: t(locale, "editorReset", "Editor reset.") });
   };
 
   const applyJson = () => {
@@ -286,7 +294,7 @@ export function DashboardClient({
         }))
       }));
       setBuilder({ weekLabel: parsed.weekLabel || "", days: mapped });
-      setMessage({ type: "success", text: "JSON loaded into editor." });
+      setMessage({ type: "success", text: t(locale, "jsonLoaded", "JSON loaded into editor.") });
     } catch (error: any) {
       setMessage({ type: "error", text: error.message });
     }
@@ -294,7 +302,7 @@ export function DashboardClient({
 
   const copyJson = async () => {
     await navigator.clipboard.writeText(jsonText);
-    setMessage({ type: "success", text: "JSON copied to clipboard." });
+    setMessage({ type: "success", text: t(locale, "jsonCopied", "JSON copied to clipboard.") });
   };
 
   const saveSchedule = async () => {
@@ -311,7 +319,7 @@ export function DashboardClient({
       setWeekData(data);
       setWeekDate(data.week.start_date);
       setEditorOpen(false);
-      setMessage({ type: "success", text: "Schedule saved." });
+      setMessage({ type: "success", text: t(locale, "scheduleSaved", "Schedule saved.") });
     } catch (error: any) {
       setMessage({ type: "error", text: error.message });
     }
@@ -406,7 +414,7 @@ export function DashboardClient({
                 {t(locale, "weeklySchedule", "Weekly Schedule")}
               </p>
               <h1 className="text-3xl font-semibold text-neutral-900">
-                {selectedParish?.name || "Schedule"}
+                {selectedParish?.name || t(locale, "weeklySchedule", "Schedule")}
               </h1>
               <p className="mt-2 text-sm text-neutral-500">
                 {t(locale, "welcomeBack", "Welcome back")}, {userName}.
@@ -474,7 +482,7 @@ export function DashboardClient({
                   disabled={loadingWeek}
                   className="rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white"
                 >
-                  {loadingWeek ? "Loading..." : t(locale, "load", "Load")}
+                  {loadingWeek ? t(locale, "loading", "Loading...") : t(locale, "load", "Load")}
                 </button>
               </div>
               {parishes.length > 1 ? (
@@ -558,7 +566,7 @@ export function DashboardClient({
                           >
                             <span className="font-semibold text-neutral-900">{event.time}</span>
                             <span className="rounded-full bg-neutral-900 px-2 py-1 text-xs uppercase tracking-wide text-white">
-                              {event.type}
+                              {eventTypeLabel(event.type)}
                             </span>
                             {event.intention ? (
                               <span className="text-neutral-600">{event.intention}</span>
@@ -583,7 +591,9 @@ export function DashboardClient({
               <div className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-200 pb-6">
                 <div>
                   <h2 className="text-2xl font-semibold">{t(locale, "scheduleEditor", "Schedule editor")}</h2>
-                  <p className="text-sm text-neutral-500">Build days, locations, and events for the week.</p>
+                  <p className="text-sm text-neutral-500">
+                    {t(locale, "scheduleEditorSubtitle", "Build days, locations, and events for the week.")}
+                  </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
@@ -611,7 +621,7 @@ export function DashboardClient({
                 <div className="space-y-6">
                   <div>
                     <label className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">
-                      Week label
+                      {t(locale, "weekLabelInput", "Week label")}
                     </label>
                     <input
                       value={builder.weekLabel}
@@ -636,7 +646,7 @@ export function DashboardClient({
                           type="text"
                           value={day.info}
                           onChange={(event) => updateDay(dayIndex, { info: event.target.value })}
-                          placeholder="Info"
+                          placeholder={t(locale, "infoPlaceholder", "Info")}
                           className="flex-1 rounded-full border border-neutral-200 px-3 py-2 text-sm"
                         />
                       </div>
@@ -653,7 +663,7 @@ export function DashboardClient({
                                 }
                                 className="rounded-full border border-neutral-200 px-3 py-2 text-sm"
                               >
-                                <option value="">Select location</option>
+                                <option value="">{t(locale, "locationSelectPlaceholder", "Select location")}</option>
                                 {locations.map((loc) => (
                                   <option key={loc._id} value={loc._id}>
                                     {loc.name}
@@ -682,7 +692,7 @@ export function DashboardClient({
                                   >
                                     {EVENT_TYPES.map((type) => (
                                       <option key={type.value} value={type.value}>
-                                        {type.label}
+                                        {t(locale, type.key, type.value)}
                                       </option>
                                     ))}
                                   </select>
@@ -692,7 +702,7 @@ export function DashboardClient({
                                     onChange={(e) =>
                                       updateEvent(dayIndex, locIndex, eventIndex, { time: e.target.value })
                                     }
-                                    placeholder="Time"
+                                    placeholder={t(locale, "timePlaceholder", "Time")}
                                     className="w-24 rounded-full border border-neutral-200 px-3 py-2 text-sm"
                                   />
                                   <input
@@ -703,7 +713,7 @@ export function DashboardClient({
                                         intention: e.target.value
                                       })
                                     }
-                                    placeholder="Intention"
+                                    placeholder={t(locale, "intentionPlaceholder", "Intention")}
                                     className="flex-1 rounded-full border border-neutral-200 px-3 py-2 text-sm"
                                   />
                                   <input
@@ -712,7 +722,7 @@ export function DashboardClient({
                                     onChange={(e) =>
                                       updateEvent(dayIndex, locIndex, eventIndex, { info: e.target.value })
                                     }
-                                    placeholder="Info"
+                                    placeholder={t(locale, "eventInfoPlaceholder", "Additional info")}
                                     className="flex-1 rounded-full border border-neutral-200 px-3 py-2 text-sm"
                                   />
                                   <button

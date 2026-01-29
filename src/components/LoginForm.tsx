@@ -1,13 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
+import { Locale, t } from "@/lib/i18n";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [locale, setLocale] = useState<Locale>("sk");
+
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? window.localStorage.getItem("locale") : null;
+    if (stored === "en" || stored === "sk") {
+      setLocale(stored);
+    }
+  }, []);
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -21,7 +30,7 @@ export function LoginForm() {
     });
 
     if (result?.error) {
-      setError("Invalid email or password.");
+      setError(t(locale, "invalidCredentials", "Invalid email or password."));
       setLoading(false);
       return;
     }
@@ -33,7 +42,7 @@ export function LoginForm() {
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
         <label className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
-          Email
+          {t(locale, "emailPlaceholder", "Email")}
         </label>
         <input
           type="email"
@@ -45,7 +54,7 @@ export function LoginForm() {
       </div>
       <div className="space-y-2">
         <label className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
-          Password
+          {t(locale, "passwordPlaceholder", "Password")}
         </label>
         <input
           type="password"
@@ -65,7 +74,7 @@ export function LoginForm() {
         disabled={loading}
         className="w-full rounded-2xl bg-neutral-900 px-4 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-neutral-800 disabled:opacity-60"
       >
-        {loading ? "Signing in..." : "Sign in"}
+        {loading ? t(locale, "loading", "Loading...") : t(locale, "signIn", "Sign in")}
       </button>
     </form>
   );

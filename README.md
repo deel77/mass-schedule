@@ -1,4 +1,4 @@
-# Program OMSI (Convex + Next.js)
+﻿# Program OMSI (Convex + Next.js)
 
 Modern schedule manager for parishes, rebuilt on Convex and Next.js with a Tailwind UI.
 
@@ -27,4 +27,5 @@ Then visit `http://localhost:3000`.
 ## Notes
 - First-time setup requires `/api/setup` with `SETUP_SECRET`.
 - The UI lives in `src/components/DashboardClient.tsx` and `src/components/SettingsClient.tsx`.
+- Translations live in `src/lib/i18n.ts` and the locale is stored in `localStorage`.
 - Convex functions are in `convex/`.

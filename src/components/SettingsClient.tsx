@@ -41,6 +41,13 @@ function formatDate(value?: number) {
   return new Date(value).toLocaleString();
 }
 
+function formatStatus(template: string, values: Record<string, string>) {
+  return Object.entries(values).reduce(
+    (acc, [key, value]) => acc.replace(new RegExp(`\\{${key}\\}`, "g"), value),
+    template
+  );
+}
+
 export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
   const [parishes, setParishes] = useState<Parish[]>([]);
   const [locationsByParish, setLocationsByParish] = useState<Record<string, Location[]>>({});
@@ -136,7 +143,7 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
       setStatus(payload.message || "Failed to create parish");
       return;
     }
-    setStatus("Parish created.");
+    setStatus(t(locale, "statusParishCreated", "Parish created."));
     loadParishes();
     event.currentTarget.reset();
   };
@@ -156,7 +163,7 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
       setStatus(payload.message || "Failed to update parish");
       return;
     }
-    setStatus("Parish updated.");
+    setStatus(t(locale, "statusParishUpdated", "Parish updated."));
     loadParishes();
   };
 
@@ -167,7 +174,7 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
       setStatus(payload.message || "Failed to delete parish");
       return;
     }
-    setStatus("Parish deleted.");
+    setStatus(t(locale, "statusParishDeleted", "Parish deleted."));
     loadParishes();
   };
 
@@ -191,7 +198,7 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
       setStatus(payload.message || "Failed to create location");
       return;
     }
-    setStatus("Location created.");
+    setStatus(t(locale, "statusLocationCreated", "Location created."));
     if (typeof body.parishId === "string") {
       loadLocations(body.parishId);
     }
@@ -214,7 +221,7 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
       setStatus(payload.message || "Failed to update location");
       return;
     }
-    setStatus("Location updated.");
+    setStatus(t(locale, "statusLocationUpdated", "Location updated."));
     loadLocations(location.parishId);
   };
 
@@ -225,7 +232,7 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
       setStatus(payload.message || "Failed to delete location");
       return;
     }
-    setStatus("Location deleted.");
+    setStatus(t(locale, "statusLocationDeleted", "Location deleted."));
     loadLocations(location.parishId);
   };
 
@@ -251,9 +258,14 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
       return;
     }
     if (payload.generatedPassword) {
-      setStatus(`User created. Generated password: ${payload.generatedPassword}`);
+      setStatus(
+        formatStatus(
+          t(locale, "statusUserCreatedGenerated", "User created. Generated password: {password}"),
+          { password: payload.generatedPassword }
+        )
+      );
     } else {
-      setStatus("User created.");
+      setStatus(t(locale, "statusUserCreated", "User created."));
     }
     loadUsers();
     event.currentTarget.reset();
@@ -276,7 +288,7 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
       setStatus(payload.message || "Failed to update user");
       return;
     }
-    setStatus("User updated.");
+    setStatus(t(locale, "statusUserUpdated", "User updated."));
     loadUsers();
   };
 
@@ -301,7 +313,7 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
       return;
     }
     setNewToken(payload.token);
-    setStatus("Token created. Copy it now - it will not be shown again.");
+    setStatus(t(locale, "statusTokenCreated", "Token created. Copy it now - it will not be shown again."));
     loadTokens();
     event.currentTarget.reset();
   };
@@ -322,7 +334,7 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
       setStatus(payload.message || "Failed to update token");
       return;
     }
-    setStatus("Token updated.");
+    setStatus(t(locale, "statusTokenUpdated", "Token updated."));
     loadTokens();
   };
 
@@ -362,11 +374,26 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
         {isSuperadmin ? (
           <section className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
             <div className="rounded-[28px] border border-neutral-200 bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-semibold text-neutral-900">Parishes</h2>
+              <h2 className="text-xl font-semibold text-neutral-900">
+                {t(locale, "parishesTitle", "Parishes")}
+              </h2>
               <form onSubmit={createParish} className="mt-4 grid gap-3">
-                <input name="name" placeholder="Parish name" className="rounded-2xl border px-4 py-2 text-sm" required />
-                <input name="slug" placeholder="Slug (optional)" className="rounded-2xl border px-4 py-2 text-sm" />
-                <input name="description" placeholder="Description" className="rounded-2xl border px-4 py-2 text-sm" />
+                <input
+                  name="name"
+                  placeholder={t(locale, "parishNamePlaceholder", "Parish name")}
+                  className="rounded-2xl border px-4 py-2 text-sm"
+                  required
+                />
+                <input
+                  name="slug"
+                  placeholder={t(locale, "slugOptionalPlaceholder", "Slug (optional)")}
+                  className="rounded-2xl border px-4 py-2 text-sm"
+                />
+                <input
+                  name="description"
+                  placeholder={t(locale, "descriptionPlaceholder", "Description")}
+                  className="rounded-2xl border px-4 py-2 text-sm"
+                />
                 <button className="rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white">
                   {t(locale, "addParish", "Add parish")}
                 </button>
@@ -390,7 +417,7 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
                         onClick={() => deleteParish(parish._id)}
                         className="text-xs font-semibold uppercase tracking-wide text-red-500"
                       >
-                        Delete
+                        {t(locale, "deleteLabel", "Delete")}
                       </button>
                     </div>
                     <input
@@ -409,17 +436,35 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
               </h2>
               <form onSubmit={createLocation} className="mt-4 grid gap-3">
                 <select name="parishId" className="rounded-2xl border px-4 py-2 text-sm" required>
-                  <option value="">Select parish</option>
+                  <option value="">{t(locale, "selectParish", "Select parish")}</option>
                   {parishes.map((parish) => (
                     <option key={parish._id} value={parish._id}>
                       {parish.name}
                     </option>
                   ))}
                 </select>
-                <input name="name" placeholder="Location name" className="rounded-2xl border px-4 py-2 text-sm" required />
-                <input name="slug" placeholder="Slug" className="rounded-2xl border px-4 py-2 text-sm" />
-                <input name="displayOrder" placeholder="Display order" type="number" className="rounded-2xl border px-4 py-2 text-sm" />
-                <input name="description" placeholder="Description" className="rounded-2xl border px-4 py-2 text-sm" />
+                <input
+                  name="name"
+                  placeholder={t(locale, "locationNamePlaceholder", "Location name")}
+                  className="rounded-2xl border px-4 py-2 text-sm"
+                  required
+                />
+                <input
+                  name="slug"
+                  placeholder={t(locale, "slugOptionalPlaceholder", "Slug (optional)")}
+                  className="rounded-2xl border px-4 py-2 text-sm"
+                />
+                <input
+                  name="displayOrder"
+                  placeholder={t(locale, "displayOrderPlaceholder", "Display order")}
+                  type="number"
+                  className="rounded-2xl border px-4 py-2 text-sm"
+                />
+                <input
+                  name="description"
+                  placeholder={t(locale, "descriptionPlaceholder", "Description")}
+                  className="rounded-2xl border px-4 py-2 text-sm"
+                />
                 <button className="rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white">
                   {t(locale, "addLocation", "Add location")}
                 </button>
@@ -454,7 +499,7 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
                             onClick={() => deleteLocation(location)}
                             className="text-[10px] font-semibold uppercase tracking-wide text-red-500"
                           >
-                            Delete
+                            {t(locale, "deleteLabel", "Delete")}
                           </button>
                         </div>
                         <input
@@ -474,12 +519,32 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
         {isSuperadmin ? (
           <section className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
             <div className="rounded-[28px] border border-neutral-200 bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-semibold text-neutral-900">Users</h2>
+              <h2 className="text-xl font-semibold text-neutral-900">
+                {t(locale, "usersTitle", "Users")}
+              </h2>
               <form onSubmit={createUser} className="mt-4 grid gap-3">
-                <input name="name" placeholder="Name" className="rounded-2xl border px-4 py-2 text-sm" required />
-                <input name="email" type="email" placeholder="Email" className="rounded-2xl border px-4 py-2 text-sm" required />
-                <input name="password" type="password" placeholder="Password (optional)" className="rounded-2xl border px-4 py-2 text-sm" />
-                <label className="text-xs font-semibold uppercase tracking-wide text-neutral-400">Parishes</label>
+                <input
+                  name="name"
+                  placeholder={t(locale, "namePlaceholder", "Name")}
+                  className="rounded-2xl border px-4 py-2 text-sm"
+                  required
+                />
+                <input
+                  name="email"
+                  type="email"
+                  placeholder={t(locale, "emailPlaceholder", "Email")}
+                  className="rounded-2xl border px-4 py-2 text-sm"
+                  required
+                />
+                <input
+                  name="password"
+                  type="password"
+                  placeholder={t(locale, "passwordOptionalPlaceholder", "Password (optional)")}
+                  className="rounded-2xl border px-4 py-2 text-sm"
+                />
+                <label className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
+                  {t(locale, "parishesLabel", "Parishes")}
+                </label>
                 <div className="flex flex-wrap gap-2">
                   {parishes.map((parish) => (
                     <label key={parish._id} className="flex items-center gap-2 text-xs text-neutral-600">
@@ -489,7 +554,7 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
                   ))}
                 </div>
                 <label className="flex items-center gap-2 text-xs text-neutral-600">
-                  <input type="checkbox" name="isSuperadmin" /> Superadmin
+                  <input type="checkbox" name="isSuperadmin" /> {t(locale, "superadminLabel", "Superadmin")}
                 </label>
                 <button className="rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white">
                   {t(locale, "addUser", "Add user")}
@@ -535,18 +600,20 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
                           checked={user.isSuperadmin}
                           onChange={(e) => updateUser(user, { isSuperadmin: e.target.checked })}
                         />
-                        Superadmin
+                        {t(locale, "superadminLabel", "Superadmin")}
                       </label>
                       <button
                         onClick={() => {
-                          const password = prompt("New password (leave blank to skip)");
+                          const password = prompt(
+                            t(locale, "passwordResetPrompt", "New password (leave blank to skip)")
+                          );
                           if (password) {
                             updateUser(user, { password });
                           }
                         }}
                         className="text-xs font-semibold uppercase tracking-wide text-neutral-400"
                       >
-                        Reset password
+                        {t(locale, "resetPasswordLabel", "Reset password")}
                       </button>
                     </div>
                   </div>
@@ -555,7 +622,9 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
             </div>
 
             <div className="rounded-[28px] border border-neutral-200 bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-semibold text-neutral-900">External API tokens</h2>
+              <h2 className="text-xl font-semibold text-neutral-900">
+                {t(locale, "externalTokensTitle", "External API tokens")}
+              </h2>
               {newToken ? (
                 <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
                   {t(locale, "tokenCreated", "Token created. Copy it now - it will not be shown again.")}{" "}
@@ -563,8 +632,15 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
                 </div>
               ) : null}
               <form onSubmit={createToken} className="mt-4 grid gap-3">
-                <input name="name" placeholder="Token name" className="rounded-2xl border px-4 py-2 text-sm" required />
-                <label className="text-xs font-semibold uppercase tracking-wide text-neutral-400">Parishes</label>
+                <input
+                  name="name"
+                  placeholder={t(locale, "apiTokenNamePlaceholder", "Token name")}
+                  className="rounded-2xl border px-4 py-2 text-sm"
+                  required
+                />
+                <label className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
+                  {t(locale, "parishesLabel", "Parishes")}
+                </label>
                 <div className="flex flex-wrap gap-2">
                   {parishes.map((parish) => (
                     <label key={parish._id} className="flex items-center gap-2 text-xs text-neutral-600">
@@ -573,7 +649,9 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
                     </label>
                   ))}
                 </div>
-                <label className="text-xs font-semibold uppercase tracking-wide text-neutral-400">Scopes</label>
+                <label className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
+                  {t(locale, "scopesLabel", "Scopes")}
+                </label>
                 <div className="flex flex-wrap gap-2">
                   {TOKEN_SCOPES.map((scope) => (
                     <label key={scope} className="flex items-center gap-2 text-xs text-neutral-600">
@@ -597,7 +675,9 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
                           onBlur={(e) => updateToken(token, { name: e.target.value })}
                           className="rounded-xl border px-3 py-2 text-sm"
                         />
-                        <p className="mt-1 text-xs text-neutral-400">Prefix: {token.tokenPrefix}</p>
+                        <p className="mt-1 text-xs text-neutral-400">
+                          {t(locale, "prefixLabel", "Prefix")}: {token.tokenPrefix}
+                        </p>
                       </div>
                       <label className="flex items-center gap-2 text-xs text-neutral-600">
                         <input
@@ -605,10 +685,12 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
                           checked={token.isActive}
                           onChange={(e) => updateToken(token, { isActive: e.target.checked })}
                         />
-                        Active
+                        {t(locale, "activeLabel", "Active")}
                       </label>
                     </div>
-                    <div className="mt-2 text-xs text-neutral-500">Last used: {formatDate(token.lastUsedAt)}</div>
+                    <div className="mt-2 text-xs text-neutral-500">
+                      {t(locale, "lastUsedLabel", "Last used")}: {formatDate(token.lastUsedAt)}
+                    </div>
                     <div className="mt-2 flex flex-wrap gap-2 text-xs">
                       {parishes.map((parish) => (
                         <label key={parish._id} className="flex items-center gap-2 text-neutral-600">

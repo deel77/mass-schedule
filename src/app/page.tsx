@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { convexQuery } from "@/lib/convexClient";
 import { DashboardClient } from "@/components/DashboardClient";
+import { t } from "@/lib/i18n";
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
@@ -19,9 +20,15 @@ export default async function HomePage() {
     return (
       <div className="min-h-screen bg-neutral-950 px-6 py-12 text-white">
         <div className="mx-auto max-w-2xl space-y-4">
-          <h1 className="text-3xl font-semibold">No parish assigned</h1>
+          <h1 className="text-3xl font-semibold">
+            {t("sk", "noParishTitle", "Nemáte priradenú farnosť")}
+          </h1>
           <p className="text-sm text-neutral-300">
-            Ask a superadmin to assign at least one parish to your account.
+            {t(
+              "sk",
+              "noParishMessage",
+              "Požiadajte superadmina o priradenie aspoň jednej farnosti."
+            )}
           </p>
         </div>
       </div>

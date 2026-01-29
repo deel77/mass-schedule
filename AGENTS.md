@@ -1,4 +1,4 @@
-# AGENTS.md
+ï»¿# AGENTS.md
 
 ## Project summary
 - **Name**: Program OMSI (Convex + Next.js)
@@ -13,11 +13,11 @@
 - UI includes JSON import/export for weekly schedules.
 
 ## Repository layout
-- `convex/` — Convex schema + server functions (queries/mutations).
-- `src/app/api/` — REST API routes (Next.js).
-- `src/components/` — UI components (Dashboard, Settings, Login).
-- `docs/legacy/` — Legacy Laravel behavior reference.
-- `docs/new/` — New system docs (API, data model, setup).
+- `convex/` â€” Convex schema + server functions (queries/mutations).
+- `src/app/api/` â€” REST API routes (Next.js).
+- `src/components/` â€” UI components (Dashboard, Settings, Login).
+- `docs/legacy/` â€” Legacy Laravel behavior reference.
+- `docs/new/` â€” New system docs (API, data model, setup).
 
 ## Convex deployment (dev)
 - Team: `dominik-lakatos`
@@ -33,10 +33,10 @@
 ## Environment variables
 Create `.env.local` from `.env.example`.
 Required:
-- `CONVEX_URL` and `NEXT_PUBLIC_CONVEX_URL` — Convex deployment URL.
-- `NEXTAUTH_URL` — frontend URL (http://localhost:3000 in dev).
-- `NEXTAUTH_SECRET` — generated secret.
-- `SETUP_SECRET` — secret for `/api/setup` bootstrap.
+- `CONVEX_URL` and `NEXT_PUBLIC_CONVEX_URL` â€” Convex deployment URL.
+- `NEXTAUTH_URL` â€” frontend URL (http://localhost:3000 in dev).
+- `NEXTAUTH_SECRET` â€” generated secret.
+- `SETUP_SECRET` â€” secret for `/api/setup` bootstrap.
 
 ## Local dev commands
 ```bash
@@ -56,6 +56,10 @@ npm run build
   - `context: { params: Promise<{ param: string }> }`
   - avoid naming collisions with any local `context` variable.
 
+## Localization
+- UI translations live in `src/lib/i18n.ts` (UTF-8, includes SK diacritics).
+- Locale selection is stored in `localStorage` (`sk` or `en`).
+
 ## Bootstrap first superadmin
 POST `/api/setup` with JSON body:
 ```json
@@ -68,33 +72,34 @@ POST `/api/setup` with JSON body:
 ```
 
 ## Main UI routes
-- `/login` — sign in
-- `/` — dashboard (weekly schedule + editor)
-- `/settings` — admin management
+- `/login` â€” sign in
+- `/` â€” dashboard (weekly schedule + editor)
+- `/settings` â€” admin management
 
 ## REST API overview
 - `GET /api/weeks?date=YYYY-MM-DD&parish=<slug|id>`
 - `GET /api/days?date=YYYY-MM-DD&parish=<slug|id>`
 - `GET /api/location-schedules/{slug}?date=YYYY-MM-DD&parish=<slug|id>`
-- `POST /api/schedules` — import weekly schedule (requires signed-in user)
+- `POST /api/schedules` â€” import weekly schedule (requires signed-in user)
 - Admin:
   - `/api/parishes`, `/api/locations`, `/api/users`, `/api/tokens`
 
 ## Convex functions
-- `convex/schema.ts` — tables + indexes
-- `convex/schedules.ts` — import + week/day/location views
-- `convex/users.ts` — user CRUD
-- `convex/parishes.ts` — parish CRUD
-- `convex/locations.ts` — location CRUD
-- `convex/tokens.ts` — external token CRUD
-- `convex/setup.ts` — bootstrap admin
+- `convex/schema.ts` â€” tables + indexes
+- `convex/schedules.ts` â€” import + week/day/location views
+- `convex/users.ts` â€” user CRUD
+- `convex/parishes.ts` â€” parish CRUD
+- `convex/locations.ts` â€” location CRUD
+- `convex/tokens.ts` â€” external token CRUD
+- `convex/setup.ts` â€” bootstrap admin
 
 ## Important files
-- `src/components/DashboardClient.tsx` — schedule view + editor
-- `src/components/SettingsClient.tsx` — admin console
-- `src/lib/apiAuth.ts` — token auth + scope checks
-- `src/lib/convexClient.ts` — Convex HTTP client for API routes
-- `docs/new/api.md` — canonical API doc
+- `src/components/DashboardClient.tsx` â€” schedule view + editor
+- `src/components/SettingsClient.tsx` â€” admin console
+- `src/lib/apiAuth.ts` â€” token auth + scope checks
+- `src/lib/convexClient.ts` â€” Convex HTTP client for API routes
+- `src/lib/i18n.ts` â€” UI translations
+- `docs/new/api.md` â€” canonical API doc
 
 ## Git
 - Default branch: `main`
