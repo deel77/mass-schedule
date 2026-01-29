@@ -105,6 +105,7 @@ Request body (legacy-compatible schedule payload):
 Notes:
 - `date` accepts `YYYY-MM-DD` or `D.M.YYYY` (both are normalized).
 - Locations can be resolved by `locationId`, `locationSlug`, or `locationName`/`name`.
+- `info` and `intention` may be `null` in legacy JSON; they are normalized to omitted values.
 
 Alternative normalized payload (used internally by the editor) is also accepted:
 ```json

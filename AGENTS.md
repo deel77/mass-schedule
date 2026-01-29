@@ -84,6 +84,9 @@ POST `/api/setup` with JSON body:
 - Admin:
   - `/api/parishes`, `/api/locations`, `/api/users`, `/api/tokens`
 
+## Import normalization
+- Legacy JSON with `info: null` or `intention: null` is normalized to omitted fields before validation.
+
 ## Convex functions
 - `convex/schema.ts` — tables + indexes
 - `convex/schedules.ts` — import + week/day/location views

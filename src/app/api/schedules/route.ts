@@ -3,9 +3,34 @@ import { getAuthContext } from "@/lib/apiAuth";
 import { convexMutation, convexQuery } from "@/lib/convexClient";
 import { resolveParishId } from "@/lib/resolveParish";
 
+function normalizeEvent(event: any) {
+  return {
+    ...event,
+    intention: event?.intention ?? undefined,
+    info: event?.info ?? undefined
+  };
+}
+
+function normalizeLocation(location: any) {
+  return {
+    ...location,
+    events: (location?.events || []).map(normalizeEvent)
+  };
+}
+
 function normalizePayload(body: any) {
   if (Array.isArray(body.days)) {
-    return body;
+    return {
+      ...body,
+      days: body.days.map((day: any) => ({
+        ...day,
+        info: day?.info ?? undefined,
+        locations: (day.locations || []).map((location: any) => ({
+          ...location,
+          events: (location.events || []).map(normalizeEvent)
+        }))
+      }))
+    };
   }
   if (Array.isArray(body.schedule)) {
     return {
@@ -13,10 +38,10 @@ function normalizePayload(body: any) {
       days: body.schedule.map((day: any) => ({
         date: day.date,
         dayName: day.day,
-        info: day.info,
+        info: day?.info ?? undefined,
         locations: (day.locations || []).map((location: any) => ({
           locationName: location.name,
-          events: location.events || []
+          events: (location.events || []).map(normalizeEvent)
         }))
       }))
     };
