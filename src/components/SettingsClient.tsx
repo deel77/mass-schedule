@@ -36,7 +36,7 @@ type Token = {
   lastUsedAt?: number;
 };
 
-const TOKEN_SCOPES = ["read:weeks", "read:days", "read:locations"];
+const TOKEN_SCOPES = ["read:weeks", "read:days", "read:locations", "write:schedules"];
 
 function formatDate(value: number | undefined, locale: Locale) {
   if (!value) {

@@ -62,6 +62,147 @@ async function resolveLocation(ctx: any, parishId: string, entry: any) {
   return null;
 }
 
+async function importWeekCore(ctx: any, parishId: Id<"parishes">, weekLabel: string | undefined, days: any[]) {
+  if (days.length === 0) {
+    throw new Error("Schedule must contain at least one day");
+  }
+
+  const normalizedDates = days.map((day) => normalizeDateString(day.date));
+  const earliest = normalizedDates.sort()[0];
+  const weekStartDate = startOfWeek(parseIsoDate(earliest));
+  const weekEndDate = endOfWeek(weekStartDate);
+  const weekStartIso = formatIsoDate(weekStartDate);
+  const weekEndIso = formatIsoDate(weekEndDate);
+
+  let existingWeekLabel = await ctx.db
+    .query("weekLabels")
+    .withIndex("by_parish_start", (q: any) =>
+      q.eq("parishId", parishId).eq("startDate", weekStartIso)
+    )
+    .unique();
+
+  if (!existingWeekLabel) {
+    const labelId = await ctx.db.insert("weekLabels", {
+      parishId,
+      startDate: weekStartIso,
+      endDate: weekEndIso,
+      label: weekLabel?.trim() || undefined,
+      createdAt: Date.now()
+    });
+    existingWeekLabel = await ctx.db.get(labelId);
+  } else if (weekLabel !== undefined) {
+    await ctx.db.patch(existingWeekLabel._id, {
+      label: weekLabel?.trim() || undefined,
+      endDate: weekEndIso
+    });
+  }
+
+  const keepDates = new Set(normalizedDates);
+  const existingDays = await ctx.db
+    .query("days")
+    .withIndex("by_parish_date", (q: any) =>
+      q.eq("parishId", parishId).gte("date", weekStartIso).lte("date", weekEndIso)
+    )
+    .collect();
+
+  for (const day of existingDays) {
+    if (!keepDates.has(day.date)) {
+      const existingEvents = await ctx.db
+        .query("events")
+        .withIndex("by_day", (q: any) => q.eq("dayId", day._id))
+        .collect();
+      for (const event of existingEvents) {
+        await ctx.db.delete(event._id);
+      }
+      await ctx.db.delete(day._id);
+    }
+  }
+
+  const locationOrderMap = new Map<Id<"locations">, number>();
+
+  for (const dayPayload of days) {
+    const dateIso = normalizeDateString(dayPayload.date);
+
+    let day = await ctx.db
+      .query("days")
+      .withIndex("by_parish_date", (q: any) => q.eq("parishId", parishId).eq("date", dateIso))
+      .unique();
+
+    if (!day) {
+      const dayId = await ctx.db.insert("days", {
+        parishId,
+        date: dateIso,
+        dayName: dayPayload.dayName,
+        info: dayPayload.info?.trim() || undefined,
+        weekLabelId: existingWeekLabel?._id,
+        createdAt: Date.now()
+      });
+      day = await ctx.db.get(dayId);
+    } else {
+      await ctx.db.patch(day._id, {
+        dayName: dayPayload.dayName,
+        info: dayPayload.info?.trim() || undefined,
+        weekLabelId: existingWeekLabel?._id
+      });
+    }
+
+    if (!day) {
+      throw new Error("Day record could not be created.");
+    }
+
+    const existingEvents = await ctx.db
+      .query("events")
+      .withIndex("by_day", (q: any) => q.eq("dayId", day._id))
+      .collect();
+    for (const event of existingEvents) {
+      await ctx.db.delete(event._id);
+    }
+
+    for (let index = 0; index < dayPayload.locations.length; index += 1) {
+      const locationPayload = dayPayload.locations[index];
+      const location = await resolveLocation(ctx, parishId, locationPayload);
+      if (!location) {
+        throw new Error("Location not found in parish");
+      }
+      const currentOrder = locationOrderMap.get(location._id);
+      if (currentOrder === undefined || index < currentOrder) {
+        locationOrderMap.set(location._id, index);
+      }
+
+      for (const eventPayload of locationPayload.events) {
+        if (!EVENT_TYPES.includes(eventPayload.type as any)) {
+          throw new Error("Invalid event type");
+        }
+        if (!eventPayload.time || !eventPayload.type) {
+          throw new Error("Event time and type are required");
+        }
+
+        await ctx.db.insert("events", {
+          dayId: day._id,
+          locationId: location._id,
+          eventType: eventPayload.type,
+          timeText: eventPayload.time,
+          intention: eventPayload.intention?.trim() || undefined,
+          info: eventPayload.info?.trim() || undefined,
+          createdAt: Date.now()
+        });
+      }
+    }
+  }
+
+  for (const [locationId, order] of locationOrderMap.entries()) {
+    await ctx.db.patch(locationId, { displayOrder: order });
+  }
+
+  return {
+    week: {
+      start_date: weekStartIso,
+      end_date: weekEndIso,
+      label: existingWeekLabel?.label ?? null
+    }
+  };
+}
+
 async function formatWeek(ctx: any, parishId: string, date: string, onlyLocationId?: string) {
   const baseDate = parseIsoDate(normalizeDateString(date));
   const start = startOfWeek(baseDate);
@@ -301,142 +442,38 @@ export const importWeek = mutation({
   },
   handler: async (ctx, args) => {
     await assertParishAccess(ctx, args.actorId, args.parishId);
+    return importWeekCore(ctx, args.parishId, args.weekLabel, args.days);
+  }
+});
 
-    if (args.days.length === 0) {
-      throw new Error("Schedule must contain at least one day");
-    }
-
-    const normalizedDates = args.days.map((day) => normalizeDateString(day.date));
-    const earliest = normalizedDates.sort()[0];
-    const weekStartDate = startOfWeek(parseIsoDate(earliest));
-    const weekEndDate = endOfWeek(weekStartDate);
-    const weekStartIso = formatIsoDate(weekStartDate);
-    const weekEndIso = formatIsoDate(weekEndDate);
-
-    let weekLabel = await ctx.db
-      .query("weekLabels")
-      .withIndex("by_parish_start", (q) => q.eq("parishId", args.parishId).eq("startDate", weekStartIso))
-      .unique();
-
-    if (!weekLabel) {
-      const labelId = await ctx.db.insert("weekLabels", {
-        parishId: args.parishId,
-        startDate: weekStartIso,
-        endDate: weekEndIso,
-        label: args.weekLabel?.trim() || undefined,
-        createdAt: Date.now()
-      });
-      weekLabel = await ctx.db.get(labelId);
-    } else if (args.weekLabel !== undefined) {
-      await ctx.db.patch(weekLabel._id, {
-        label: args.weekLabel?.trim() || undefined,
-        endDate: weekEndIso
-      });
-    }
-
-    const keepDates = new Set(normalizedDates);
-    const existingDays = await ctx.db
-      .query("days")
-      .withIndex("by_parish_date", (q) =>
-        q.eq("parishId", args.parishId).gte("date", weekStartIso).lte("date", weekEndIso)
-      )
-      .collect();
-
-    for (const day of existingDays) {
-      if (!keepDates.has(day.date)) {
-        const existingEvents = await ctx.db
-          .query("events")
-          .withIndex("by_day", (q: any) => q.eq("dayId", day._id))
-          .collect();
-        for (const event of existingEvents) {
-          await ctx.db.delete(event._id);
-        }
-        await ctx.db.delete(day._id);
-      }
-    }
-
-    const locationOrderMap = new Map<Id<"locations">, number>();
-
-    for (const dayPayload of args.days) {
-      const dateIso = normalizeDateString(dayPayload.date);
-
-      let day = await ctx.db
-        .query("days")
-        .withIndex("by_parish_date", (q) => q.eq("parishId", args.parishId).eq("date", dateIso))
-        .unique();
-
-      if (!day) {
-        const dayId = await ctx.db.insert("days", {
-          parishId: args.parishId,
-          date: dateIso,
-          dayName: dayPayload.dayName,
-          info: dayPayload.info?.trim() || undefined,
-          weekLabelId: weekLabel?._id,
-          createdAt: Date.now()
-        });
-        day = await ctx.db.get(dayId);
-      } else {
-        await ctx.db.patch(day._id, {
-          dayName: dayPayload.dayName,
-          info: dayPayload.info?.trim() || undefined,
-          weekLabelId: weekLabel?._id
-        });
-      }
-
-      if (!day) {
-        throw new Error("Day record could not be created.");
-      }
-
-      const existingEvents = await ctx.db
-        .query("events")
-        .withIndex("by_day", (q: any) => q.eq("dayId", day._id))
-        .collect();
-      for (const event of existingEvents) {
-        await ctx.db.delete(event._id);
-      }
-
-      for (let index = 0; index < dayPayload.locations.length; index += 1) {
-        const locationPayload = dayPayload.locations[index];
-        const location = await resolveLocation(ctx, args.parishId, locationPayload);
-        if (!location) {
-          throw new Error("Location not found in parish");
-        }
-        const currentOrder = locationOrderMap.get(location._id);
-        if (currentOrder === undefined || index < currentOrder) {
-          locationOrderMap.set(location._id, index);
-        }
-
-        for (const eventPayload of locationPayload.events) {
-          if (!EVENT_TYPES.includes(eventPayload.type as any)) {
-            throw new Error("Invalid event type");
-          }
-          if (!eventPayload.time || !eventPayload.type) {
-            throw new Error("Event time and type are required");
-          }
-
-          await ctx.db.insert("events", {
-            dayId: day._id,
-            locationId: location._id,
-            eventType: eventPayload.type,
-            timeText: eventPayload.time,
-            intention: eventPayload.intention?.trim() || undefined,
-            info: eventPayload.info?.trim() || undefined,
-            createdAt: Date.now()
-          });
-        }
-      }
-    }
-
-    for (const [locationId, order] of locationOrderMap.entries()) {
-      await ctx.db.patch(locationId, { displayOrder: order });
-    }
-
-    return {
-      week: {
-        start_date: weekStartIso,
-        end_date: weekEndIso,
-        label: weekLabel?.label ?? null
-      }
-    };
+export const importWeekWithToken = mutation({
+  args: {
+    parishId: v.id("parishes"),
+    weekLabel: v.optional(v.string()),
+    days: v.array(
+      v.object({
+        date: v.string(),
+        dayName: v.string(),
+        info: v.optional(v.string()),
+        locations: v.array(
+          v.object({
+            locationId: v.optional(v.id("locations")),
+            locationSlug: v.optional(v.string()),
+            locationName: v.optional(v.string()),
+            events: v.array(
+              v.object({
+                type: v.string(),
+                time: v.string(),
+                intention: v.optional(v.string()),
+                info: v.optional(v.string())
+              })
+            )
+          })
+        )
+      })
+    )
+  },
+  handler: async (ctx, args) => {
+    return importWeekCore(ctx, args.parishId, args.weekLabel, args.days);
   }
 });

@@ -87,6 +87,9 @@ POST `/api/setup` with JSON body:
 ## Import normalization
 - Legacy JSON with `info: null` or `intention: null` is normalized to omitted fields before validation.
 
+## Token write access
+- External tokens with `write:schedules` can POST schedules for assigned parishes.
+
 ## Convex functions
 - `convex/schema.ts` — tables + indexes
 - `convex/schedules.ts` — import + week/day/location views

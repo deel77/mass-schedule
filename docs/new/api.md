@@ -10,6 +10,7 @@ Token scopes supported:
 - `read:weeks`
 - `read:days`
 - `read:locations`
+- `write:schedules` (allows POST /api/schedules for assigned parishes)
 
 ## Setup
 
@@ -77,7 +78,7 @@ Query params:
 ## Schedule (Write)
 
 ### POST /api/schedules
-Import a full week schedule (requires signed-in user).
+Import a full week schedule (signed-in user or Bearer token with `write:schedules`).
 
 Request body (legacy-compatible schedule payload):
 ```json

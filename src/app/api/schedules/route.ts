@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAuthContext } from "@/lib/apiAuth";
+import { getAuthContext, requireParishAccess, requireScope } from "@/lib/apiAuth";
 import { convexMutation, convexQuery } from "@/lib/convexClient";
 import { resolveParishId } from "@/lib/resolveParish";
 
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
   if (!context) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
-  if (context.type !== "user") {
+  if (context.type === "token" && !requireScope(context, "write:schedules")) {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
@@ -65,13 +65,23 @@ export async function POST(request: Request) {
   if (!parishId) {
     return NextResponse.json({ message: "Parish not found" }, { status: 404 });
   }
+  if (!requireParishAccess(context, parishId)) {
+    return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+  }
   try {
-    const result = await convexMutation("schedules:importWeek", {
-      actorId: context.userId,
-      parishId,
-      weekLabel: body.weekLabel,
-      days: body.days || []
-    });
+    const result =
+      context.type === "token"
+        ? await convexMutation("schedules:importWeekWithToken", {
+            parishId,
+            weekLabel: body.weekLabel,
+            days: body.days || []
+          })
+        : await convexMutation("schedules:importWeek", {
+            actorId: context.userId,
+            parishId,
+            weekLabel: body.weekLabel,
+            days: body.days || []
+          });
 
     const data = await convexQuery("schedules:getWeekView", {
       parishId,

@@ -33,4 +33,5 @@ Then visit `http://localhost:3000`.
 - Translations live in `src/lib/i18n.ts` and the locale is stored in `localStorage`.
 - Convex functions are in `convex/`.
 - JSON import/export uses the legacy `season` + `schedule` payload; `/api/schedules` accepts both legacy and normalized formats.
+- External tokens can now write schedules with the `write:schedules` scope (restricted to assigned parishes).
 - Legacy JSON may include `info`/`intention` as `null`; the API normalizes these to omitted values.
