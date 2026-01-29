@@ -44,22 +44,6 @@ export function AppHeader({
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <nav className="flex items-center gap-2">
-            <IconLink
-              href="/"
-              label={t(locale, "navDashboard", "Dashboard")}
-              variant={!isSettings ? "primary" : "default"}
-            >
-              <IconGrid className="h-4 w-4" />
-            </IconLink>
-            <IconLink
-              href="/settings"
-              label={t(locale, "navSettings", "Settings")}
-              variant={isSettings ? "primary" : "default"}
-            >
-              <IconSettings className="h-4 w-4" />
-            </IconLink>
-          </nav>
           {workspace ? (
             <div className="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-2 text-xs text-neutral-500 shadow-sm">
               <span className="font-semibold uppercase tracking-wide">{workspace.label}</span>
@@ -76,6 +60,22 @@ export function AppHeader({
               </select>
             </div>
           ) : null}
+          <nav className="flex items-center gap-2">
+            <IconLink
+              href="/"
+              label={t(locale, "navDashboard", "Dashboard")}
+              variant={!isSettings ? "primary" : "default"}
+            >
+              <IconGrid className="h-4 w-4" />
+            </IconLink>
+            <IconLink
+              href="/settings"
+              label={t(locale, "navSettings", "Settings")}
+              variant={isSettings ? "primary" : "default"}
+            >
+              <IconSettings className="h-4 w-4" />
+            </IconLink>
+          </nav>
           {actions ? <div className="flex flex-wrap items-center gap-3">{actions}</div> : null}
           <div className="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-2 text-xs text-neutral-500 shadow-sm">
             <div className="group relative flex items-center">

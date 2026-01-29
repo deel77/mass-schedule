@@ -88,6 +88,17 @@ export function IconDownload({ className }: IconProps) {
   );
 }
 
+export function IconRefresh({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <path d="M21 12a9 9 0 0 1-15 6" />
+      <path d="M3 12a9 9 0 0 1 15-6" />
+      <path d="M3 6v6h6" />
+      <path d="M21 18v-6h-6" />
+    </IconBase>
+  );
+}
+
 export function IconTrash({ className }: IconProps) {
   return (
     <IconBase className={className}>

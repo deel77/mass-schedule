@@ -29,7 +29,7 @@ const variantClasses: Record<NonNullable<IconButtonProps["variant"]>, string> = 
 
 function Tooltip({ label }: { label: string }) {
   return (
-    <span className="pointer-events-none absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-neutral-900 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white opacity-0 shadow-sm transition group-hover:opacity-100">
+    <span className="pointer-events-none absolute -bottom-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-neutral-900 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white opacity-0 shadow-sm transition group-hover/icon:opacity-100 group-focus-visible/icon:opacity-100">
       {label}
     </span>
   );
@@ -44,7 +44,7 @@ export function IconButton({
   className,
   children
 }: IconButtonProps) {
-  const classes = `group relative inline-flex items-center justify-center rounded-full border shadow-sm transition ${sizeClasses[size]} ${variantClasses[variant]} ${
+  const classes = `group/icon relative inline-flex items-center justify-center rounded-full border shadow-sm transition ${sizeClasses[size]} ${variantClasses[variant]} ${
     disabled ? "opacity-60" : ""
   } ${className || ""}`;
 
@@ -71,7 +71,7 @@ export function IconLink({
   size = "md",
   className
 }: IconButtonProps) {
-  const classes = `group relative inline-flex items-center justify-center rounded-full border shadow-sm transition ${sizeClasses[size]} ${variantClasses[variant]} ${
+  const classes = `group/icon relative inline-flex items-center justify-center rounded-full border shadow-sm transition ${sizeClasses[size]} ${variantClasses[variant]} ${
     className || ""
   }`;
 

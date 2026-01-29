@@ -100,6 +100,8 @@ POST `/api/setup` with JSON body:
 - `src/components/AppHeader.tsx` — shared header with nav, locale switch, and parish workspace switcher
 - `src/components/DashboardClient.tsx` — schedule view + editor
 - `src/components/SettingsClient.tsx` — admin console (accordion-style sections to reduce clutter)
+- `src/components/IconButton.tsx` — icon buttons with built-in tooltips
+- `src/components/icons.tsx` — shared icon set
 - `src/lib/apiAuth.ts` — token auth + scope checks
 - `src/lib/convexClient.ts` — Convex HTTP client for API routes
 - `src/lib/i18n.ts` — UI translations

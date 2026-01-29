@@ -29,6 +29,7 @@ Then visit `http://localhost:3000`.
 - The UI lives in `src/components/DashboardClient.tsx` and `src/components/SettingsClient.tsx`.
 - Settings UI uses collapsible sections to keep large datasets manageable.
 - The shared header/navigation (including parish switcher) lives in `src/components/AppHeader.tsx`.
+- Shared icon UI helpers live in `src/components/IconButton.tsx` and `src/components/icons.tsx`.
 - Translations live in `src/lib/i18n.ts` and the locale is stored in `localStorage`.
 - Convex functions are in `convex/`.
 - JSON import/export uses the legacy `season` + `schedule` payload; `/api/schedules` accepts both legacy and normalized formats.

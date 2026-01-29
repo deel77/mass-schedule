@@ -4,7 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { Locale, t } from "@/lib/i18n";
 import { AppHeader } from "@/components/AppHeader";
 import { IconButton } from "@/components/IconButton";
-import { IconChevronLeft, IconChevronRight, IconDownload, IconPencil } from "@/components/icons";
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconPencil,
+  IconRefresh,
+  IconTrash
+} from "@/components/icons";
 
 const DAY_NAMES_SK = [
   "Pondelok",
@@ -494,7 +500,7 @@ export function DashboardClient({
                 disabled={loadingWeek}
                 variant="primary"
               >
-                <IconDownload className="h-4 w-4" />
+                <IconRefresh className="h-4 w-4" />
               </IconButton>
                 {weekData?.week.label ? (
                   <span className="rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-700">
@@ -676,12 +682,14 @@ export function DashboardClient({
                                   </option>
                                 ))}
                               </select>
-                              <button
+                              <IconButton
+                                label={t(locale, "remove", "Remove")}
                                 onClick={() => removeLocation(dayIndex, locIndex)}
-                                className="text-xs font-semibold uppercase tracking-wide text-neutral-400"
+                                variant="ghost"
+                                size="sm"
                               >
-                                {t(locale, "remove", "Remove")}
-                              </button>
+                                <IconTrash className="h-4 w-4" />
+                              </IconButton>
                             </div>
                             <div className="mt-3 space-y-3">
                               {location.events.map((event, eventIndex) => (
@@ -731,12 +739,14 @@ export function DashboardClient({
                                     placeholder={t(locale, "eventInfoPlaceholder", "Additional info")}
                                     className="flex-1 rounded-full border border-neutral-200 px-3 py-2 text-sm"
                                   />
-                                  <button
+                                  <IconButton
+                                    label={t(locale, "remove", "Remove")}
                                     onClick={() => removeEvent(dayIndex, locIndex, eventIndex)}
-                                    className="text-xs font-semibold uppercase tracking-wide text-neutral-400"
+                                    variant="ghost"
+                                    size="sm"
                                   >
-                                    {t(locale, "remove", "Remove")}
-                                  </button>
+                                    <IconTrash className="h-4 w-4" />
+                                  </IconButton>
                                 </div>
                               ))}
                               <button
