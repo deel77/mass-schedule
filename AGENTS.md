@@ -95,7 +95,7 @@ POST `/api/setup` with JSON body:
 
 ## Important files
 - `src/components/DashboardClient.tsx` — schedule view + editor
-- `src/components/SettingsClient.tsx` — admin console
+- `src/components/SettingsClient.tsx` — admin console (accordion-style sections to reduce clutter)
 - `src/lib/apiAuth.ts` — token auth + scope checks
 - `src/lib/convexClient.ts` — Convex HTTP client for API routes
 - `src/lib/i18n.ts` — UI translations

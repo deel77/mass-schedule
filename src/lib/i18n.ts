@@ -95,7 +95,25 @@ const translations: Record<Locale, Dictionary> = {
     eventTypeConfession: "Confession",
     eventTypeOther: "Other",
     noParishTitle: "No parish assigned",
-    noParishMessage: "Ask a superadmin to assign at least one parish to your account."
+    noParishMessage: "Ask a superadmin to assign at least one parish to your account.",
+    settingsOverline: "Administration",
+    statsParishes: "Parishes",
+    statsLocations: "Locations",
+    statsUsers: "Users",
+    statsTokens: "API tokens",
+    manageParishes: "Manage parishes",
+    manageLocations: "Manage locations",
+    manageUsers: "Manage users",
+    manageTokens: "Manage access tokens",
+    parishCountLabel: "total",
+    createParishHint: "Create a new parish and optionally set a slug and description.",
+    createLocationHint: "Add a location within a parish and control its ordering.",
+    createUserHint: "Invite a user and choose which parishes they can manage.",
+    createTokenHint: "Create a token for external apps and restrict its scope.",
+    locationsGroupLabel: "Locations",
+    emptyState: "No items yet.",
+    manageLabel: "Manage details",
+    inactiveLabel: "Inactive"
   },
   sk: {
     appTitle: "Program OMŠI",
@@ -189,7 +207,25 @@ const translations: Record<Locale, Dictionary> = {
     eventTypeConfession: "Sviatosť zmierenia",
     eventTypeOther: "Iná udalosť",
     noParishTitle: "Nemáte priradenú farnosť",
-    noParishMessage: "Požiadajte superadmina o priradenie aspoň jednej farnosti."
+    noParishMessage: "Požiadajte superadmina o priradenie aspoň jednej farnosti.",
+    settingsOverline: "Administrácia",
+    statsParishes: "Farnosti",
+    statsLocations: "Miesta",
+    statsUsers: "Používatelia",
+    statsTokens: "API tokeny",
+    manageParishes: "Správa farností",
+    manageLocations: "Správa miest",
+    manageUsers: "Správa používateľov",
+    manageTokens: "Správa prístupových tokenov",
+    parishCountLabel: "spolu",
+    createParishHint: "Vytvorte novú farnosť a voliteľne nastavte slug a popis.",
+    createLocationHint: "Pridajte miesto do farnosti a určite jeho poradie.",
+    createUserHint: "Prizvite používateľa a vyberte farnosti, ktoré môže spravovať.",
+    createTokenHint: "Vytvorte token pre externé aplikácie a obmedzte jeho rozsah.",
+    locationsGroupLabel: "Miesta",
+    emptyState: "Zatiaľ bez položiek.",
+    manageLabel: "Spravovať detaily",
+    inactiveLabel: "Neaktívne"
   }
 };
 
