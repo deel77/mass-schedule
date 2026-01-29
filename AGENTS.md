@@ -97,6 +97,7 @@ POST `/api/setup` with JSON body:
 - `convex/setup.ts` — bootstrap admin
 
 ## Important files
+- `src/components/AppHeader.tsx` — shared header with nav + locale switch
 - `src/components/DashboardClient.tsx` — schedule view + editor
 - `src/components/SettingsClient.tsx` — admin console (accordion-style sections to reduce clutter)
 - `src/lib/apiAuth.ts` — token auth + scope checks

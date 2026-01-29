@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Locale, t } from "@/lib/i18n";
+import { AppHeader } from "@/components/AppHeader";
 
 type Parish = { _id: string; name: string; slug: string; description?: string };
 
@@ -357,30 +358,13 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
       <div className="pointer-events-none absolute bottom-[-120px] left-[-80px] h-72 w-72 rounded-full bg-emerald-100/60 blur-3xl" />
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
-        <header className="flex flex-wrap items-start justify-between gap-6">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.4em] text-neutral-400">
-              {t(locale, "settingsOverline", "Administration")}
-            </p>
-            <h1 className="mt-2 text-3xl font-semibold text-neutral-900">
-              {t(locale, "settingsTitle", "Settings")}
-            </h1>
-            <p className="mt-2 max-w-xl text-sm text-neutral-500">
-              {t(locale, "manageSubtitle", "Manage parishes, locations, users, and external access tokens.")}
-            </p>
-          </div>
-          <div className="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-2 text-xs text-neutral-500 shadow-sm">
-            <span className="font-semibold uppercase tracking-wide">{t(locale, "language", "Language")}</span>
-            <select
-              value={locale}
-              onChange={(event) => setLocale(event.target.value as Locale)}
-              className="bg-transparent text-xs font-semibold text-neutral-600"
-            >
-              <option value="sk">SK</option>
-              <option value="en">EN</option>
-            </select>
-          </div>
-        </header>
+        <AppHeader
+          locale={locale}
+          onLocaleChange={setLocale}
+          overline={t(locale, "settingsOverline", "Administration")}
+          title={t(locale, "settingsTitle", "Settings")}
+          subtitle={t(locale, "manageSubtitle", "Manage parishes, locations, users, and external access tokens.")}
+        />
 
         {status ? (
           <div className="rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-600 shadow-sm">

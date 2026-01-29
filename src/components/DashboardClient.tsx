@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { signOut } from "next-auth/react";
 import { Locale, t } from "@/lib/i18n";
+import { AppHeader } from "@/components/AppHeader";
 
 const DAY_NAMES_SK = [
   "Pondelok",
@@ -453,62 +453,35 @@ export function DashboardClient({
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_#fff7ed_0%,_#fdfaf5_40%,_#f7f4ee_100%)] px-6 py-10">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
         <header className="flex flex-col gap-6">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">
-                {t(locale, "weeklySchedule", "Weekly Schedule")}
-              </p>
-              <h1 className="text-3xl font-semibold text-neutral-900">
-                {selectedParish?.name || t(locale, "weeklySchedule", "Schedule")}
-              </h1>
-              <p className="mt-2 text-sm text-neutral-500">
-                {t(locale, "welcomeBack", "Welcome back")}, {userName}.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-2 rounded-full border border-neutral-200 px-3 py-2 text-xs text-neutral-500">
-                <span className="font-semibold uppercase tracking-wide">{t(locale, "language", "Language")}</span>
-                <select
-                  value={locale}
-                  onChange={(event) => setLocale(event.target.value as Locale)}
-                  className="bg-transparent text-xs font-semibold text-neutral-600"
+          <AppHeader
+            locale={locale}
+            onLocaleChange={setLocale}
+            overline={t(locale, "weeklySchedule", "Weekly Schedule")}
+            title={selectedParish?.name || t(locale, "weeklySchedule", "Schedule")}
+            subtitle={`${t(locale, "welcomeBack", "Welcome back")}, ${userName}.`}
+            actions={
+              <>
+                <button
+                  onClick={() => shiftWeek(-7)}
+                  className="rounded-full border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-neutral-400"
                 >
-                  <option value="sk">SK</option>
-                  <option value="en">EN</option>
-                </select>
-              </div>
-              <a
-                href="/settings"
-                className="rounded-full border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-neutral-400"
-              >
-                {t(locale, "settings", "Settings")}
-              </a>
-              <button
-                onClick={() => signOut({ callbackUrl: "/login" })}
-                className="rounded-full border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-neutral-400"
-              >
-                {t(locale, "signOut", "Sign out")}
-              </button>
-              <button
-                onClick={() => shiftWeek(-7)}
-                className="rounded-full border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-neutral-400"
-              >
-                {t(locale, "prevWeek", "Prev week")}
-              </button>
-              <button
-                onClick={() => shiftWeek(7)}
-                className="rounded-full border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-neutral-400"
-              >
-                {t(locale, "nextWeek", "Next week")}
-              </button>
-              <button
-                onClick={() => setEditorOpen(true)}
-                className="rounded-full bg-neutral-900 px-5 py-2 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-neutral-800"
-              >
-                {t(locale, "editSchedule", "Edit schedule")}
-              </button>
-            </div>
-          </div>
+                  {t(locale, "prevWeek", "Prev week")}
+                </button>
+                <button
+                  onClick={() => shiftWeek(7)}
+                  className="rounded-full border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-neutral-400"
+                >
+                  {t(locale, "nextWeek", "Next week")}
+                </button>
+                <button
+                  onClick={() => setEditorOpen(true)}
+                  className="rounded-full bg-neutral-900 px-5 py-2 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-neutral-800"
+                >
+                  {t(locale, "editSchedule", "Edit schedule")}
+                </button>
+              </>
+            }
+          />
 
           <div className="rounded-[28px] border border-neutral-200 bg-white/80 p-5 shadow-sm">
             <div className="flex flex-wrap items-center gap-4">
