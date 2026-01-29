@@ -685,7 +685,7 @@ export function DashboardClient({
                               <IconButton
                                 label={t(locale, "remove", "Remove")}
                                 onClick={() => removeLocation(dayIndex, locIndex)}
-                                variant="ghost"
+                                variant="danger"
                                 size="sm"
                               >
                                 <IconTrash className="h-4 w-4" />
@@ -742,7 +742,7 @@ export function DashboardClient({
                                   <IconButton
                                     label={t(locale, "remove", "Remove")}
                                     onClick={() => removeEvent(dayIndex, locIndex, eventIndex)}
-                                    variant="ghost"
+                                    variant="danger"
                                     size="sm"
                                   >
                                     <IconTrash className="h-4 w-4" />

@@ -45,7 +45,7 @@ export function IconButton({
   children
 }: IconButtonProps) {
   const classes = `group/icon relative inline-flex items-center justify-center rounded-full border shadow-sm transition ${sizeClasses[size]} ${variantClasses[variant]} ${
-    disabled ? "opacity-60" : ""
+    disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"
   } ${className || ""}`;
 
   return (
@@ -71,7 +71,7 @@ export function IconLink({
   size = "md",
   className
 }: IconButtonProps) {
-  const classes = `group/icon relative inline-flex items-center justify-center rounded-full border shadow-sm transition ${sizeClasses[size]} ${variantClasses[variant]} ${
+  const classes = `group/icon relative inline-flex items-center justify-center rounded-full border shadow-sm transition ${sizeClasses[size]} ${variantClasses[variant]} cursor-pointer ${
     className || ""
   }`;
 
