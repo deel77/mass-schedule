@@ -4,6 +4,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Locale, t } from "@/lib/i18n";
 import { AppHeader } from "@/components/AppHeader";
+import { IconButton } from "@/components/IconButton";
+import { IconTrash } from "@/components/icons";
 
 type Parish = { _id: string; name: string; slug: string; description?: string };
 
@@ -474,12 +476,14 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
                           <span className="text-xs text-neutral-500">
                             {t(locale, "manageLabel", "Manage details")}
                           </span>
-                          <button
+                          <IconButton
+                            label={t(locale, "deleteLabel", "Delete")}
                             onClick={() => deleteParish(parish._id)}
-                            className="text-xs font-semibold uppercase tracking-wide text-red-500"
+                            variant="danger"
+                            size="sm"
                           >
-                            {t(locale, "deleteLabel", "Delete")}
-                          </button>
+                            <IconTrash className="h-4 w-4" />
+                          </IconButton>
                         </div>
                       </div>
                     </details>
@@ -608,12 +612,14 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
                               />
                               <div className="mt-3 flex items-center justify-between">
                                 <span className="text-xs text-neutral-500">{location.slug}</span>
-                                <button
+                                <IconButton
+                                  label={t(locale, "deleteLabel", "Delete")}
                                   onClick={() => deleteLocation(location)}
-                                  className="text-xs font-semibold uppercase tracking-wide text-red-500"
+                                  variant="danger"
+                                  size="sm"
                                 >
-                                  {t(locale, "deleteLabel", "Delete")}
-                                </button>
+                                  <IconTrash className="h-4 w-4" />
+                                </IconButton>
                               </div>
                             </div>
                           ))

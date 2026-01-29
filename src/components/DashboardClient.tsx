@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Locale, t } from "@/lib/i18n";
 import { AppHeader } from "@/components/AppHeader";
+import { IconButton } from "@/components/IconButton";
+import { IconChevronLeft, IconChevronRight, IconDownload, IconPencil } from "@/components/icons";
 
 const DAY_NAMES_SK = [
   "Pondelok",
@@ -486,13 +488,14 @@ export function DashboardClient({
                   onChange={(event) => setWeekDate(event.target.value)}
                   className="rounded-full border border-neutral-200 px-3 py-2 text-sm"
                 />
-                <button
-                  onClick={() => loadWeek(weekDate)}
-                  disabled={loadingWeek}
-                  className="rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white"
-                >
-                  {loadingWeek ? t(locale, "loading", "Loading...") : t(locale, "load", "Load")}
-                </button>
+              <IconButton
+                label={loadingWeek ? t(locale, "loading", "Loading...") : t(locale, "load", "Load")}
+                onClick={() => loadWeek(weekDate)}
+                disabled={loadingWeek}
+                variant="primary"
+              >
+                <IconDownload className="h-4 w-4" />
+              </IconButton>
                 {weekData?.week.label ? (
                   <span className="rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-700">
                     {weekData.week.label}
@@ -500,24 +503,19 @@ export function DashboardClient({
                 ) : null}
               </div>
               <div className="flex flex-wrap items-center gap-3">
-                <button
-                  onClick={() => shiftWeek(-7)}
-                  className="rounded-full border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-neutral-400"
-                >
-                  {t(locale, "prevWeek", "Prev week")}
-                </button>
-                <button
-                  onClick={() => shiftWeek(7)}
-                  className="rounded-full border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-neutral-400"
-                >
-                  {t(locale, "nextWeek", "Next week")}
-                </button>
-                <button
-                  onClick={() => setEditorOpen(true)}
-                  className="rounded-full bg-neutral-900 px-5 py-2 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-neutral-800"
-                >
-                  {t(locale, "editSchedule", "Edit schedule")}
-                </button>
+              <IconButton label={t(locale, "prevWeek", "Prev week")} onClick={() => shiftWeek(-7)}>
+                <IconChevronLeft className="h-4 w-4" />
+              </IconButton>
+              <IconButton label={t(locale, "nextWeek", "Next week")} onClick={() => shiftWeek(7)}>
+                <IconChevronRight className="h-4 w-4" />
+              </IconButton>
+              <IconButton
+                label={t(locale, "editSchedule", "Edit schedule")}
+                onClick={() => setEditorOpen(true)}
+                variant="primary"
+              >
+                <IconPencil className="h-4 w-4" />
+              </IconButton>
               </div>
             </div>
           </div>

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Locale, t } from "@/lib/i18n";
+import { IconButton, IconLink } from "@/components/IconButton";
+import { IconGlobe, IconGrid, IconSettings, IconSignOut } from "@/components/icons";
 
 type AppHeaderProps = {
   locale: Locale;
@@ -42,23 +44,21 @@ export function AppHeader({
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <nav className="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-2 py-1 text-xs font-semibold uppercase tracking-wide text-neutral-500 shadow-sm">
-            <Link
+          <nav className="flex items-center gap-2">
+            <IconLink
               href="/"
-              className={`rounded-full px-3 py-2 transition ${
-                !isSettings ? "bg-neutral-900 text-white" : "text-neutral-500 hover:text-neutral-900"
-              }`}
+              label={t(locale, "navDashboard", "Dashboard")}
+              variant={!isSettings ? "primary" : "default"}
             >
-              {t(locale, "navDashboard", "Dashboard")}
-            </Link>
-            <Link
+              <IconGrid className="h-4 w-4" />
+            </IconLink>
+            <IconLink
               href="/settings"
-              className={`rounded-full px-3 py-2 transition ${
-                isSettings ? "bg-neutral-900 text-white" : "text-neutral-500 hover:text-neutral-900"
-              }`}
+              label={t(locale, "navSettings", "Settings")}
+              variant={isSettings ? "primary" : "default"}
             >
-              {t(locale, "navSettings", "Settings")}
-            </Link>
+              <IconSettings className="h-4 w-4" />
+            </IconLink>
           </nav>
           {workspace ? (
             <div className="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-2 text-xs text-neutral-500 shadow-sm">
@@ -78,7 +78,12 @@ export function AppHeader({
           ) : null}
           {actions ? <div className="flex flex-wrap items-center gap-3">{actions}</div> : null}
           <div className="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-2 text-xs text-neutral-500 shadow-sm">
-            <span className="font-semibold uppercase tracking-wide">{t(locale, "language", "Language")}</span>
+            <div className="group relative flex items-center">
+              <IconGlobe className="h-4 w-4 text-neutral-500" />
+              <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-neutral-900 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-white opacity-0 shadow-sm transition group-hover:opacity-100">
+                {t(locale, "language", "Language")}
+              </span>
+            </div>
             <select
               value={locale}
               onChange={(event) => onLocaleChange(event.target.value as Locale)}
@@ -89,12 +94,9 @@ export function AppHeader({
             </select>
           </div>
           {showSignOut ? (
-            <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
-              className="rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-600 transition hover:border-neutral-400"
-            >
-              {t(locale, "signOut", "Sign out")}
-            </button>
+            <IconButton label={t(locale, "signOut", "Sign out")} onClick={() => signOut({ callbackUrl: "/login" })}>
+              <IconSignOut className="h-4 w-4" />
+            </IconButton>
           ) : null}
         </div>
       </div>
