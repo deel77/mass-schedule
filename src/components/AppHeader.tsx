@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Locale, t } from "@/lib/i18n";
 import { IconButton, IconLink } from "@/components/IconButton";
-import { IconGlobe, IconGrid, IconSettings, IconSignOut } from "@/components/icons";
+import { IconChevronDown, IconGlobe, IconGrid, IconSettings, IconSignOut } from "@/components/icons";
 
 type AppHeaderProps = {
   locale: Locale;
@@ -40,26 +40,32 @@ export function AppHeader({
           <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-neutral-900 text-[10px] font-semibold uppercase tracking-[0.3em] text-white shadow-sm">
             Om
           </div>
-          <span className="text-lg font-semibold text-neutral-900">{title}</span>
+          {workspace ? (
+            <div className="flex flex-col">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-neutral-400">
+                {workspace.label}
+              </span>
+              <div className="relative">
+                <select
+                  value={workspace.value}
+                  onChange={(event) => workspace.onChange(event.target.value)}
+                  className="appearance-none bg-transparent pr-6 text-lg font-semibold text-neutral-900"
+                >
+                  {workspace.options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <IconChevronDown className="pointer-events-none absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+              </div>
+            </div>
+          ) : (
+            <span className="text-lg font-semibold text-neutral-900">{title}</span>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          {workspace ? (
-            <div className="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-2 text-xs text-neutral-500 shadow-sm">
-              <span className="font-semibold uppercase tracking-wide">{workspace.label}</span>
-              <select
-                value={workspace.value}
-                onChange={(event) => workspace.onChange(event.target.value)}
-                className="bg-transparent text-xs font-semibold text-neutral-700"
-              >
-                {workspace.options.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : null}
           <nav className="flex items-center gap-2">
             <IconLink
               href="/"

@@ -31,3 +31,35 @@ h3,
 h4 {
   font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
 }
+
+button {
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+button:hover:not(:disabled) {
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+select {
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+select:hover:not(:disabled) {
+  border-color: rgba(15, 23, 42, 0.2);
+}
+
+select:disabled {
+  cursor: not-allowed;
+}
