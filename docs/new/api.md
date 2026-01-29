@@ -79,7 +79,34 @@ Query params:
 ### POST /api/schedules
 Import a full week schedule (requires signed-in user).
 
-Request body:
+Request body (legacy-compatible schedule payload):
+```json
+{
+  "parish": "cana",
+  "season": "3. tyzden v obdobi Cez rok",
+  "schedule": [
+    {
+      "day": "Pondelok",
+      "date": "26.1.2026",
+      "info": "Sv. Timoteja a Tita",
+      "locations": [
+        {
+          "name": "Cana",
+          "events": [
+            { "type": "holy-mass", "time": "7:00", "intention": "...", "info": null }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+Notes:
+- `date` accepts `YYYY-MM-DD` or `D.M.YYYY` (both are normalized).
+- Locations can be resolved by `locationId`, `locationSlug`, or `locationName`/`name`.
+
+Alternative normalized payload (used internally by the editor) is also accepted:
 ```json
 {
   "parish": "cana",
@@ -101,8 +128,6 @@ Request body:
   ]
 }
 ```
-
-Legacy payloads with `schedule` are still accepted and normalized.
 
 ## Admin APIs (Superadmin only)
 

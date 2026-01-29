@@ -10,7 +10,7 @@
 - `weekLabels` stores optional weekly label + start/end dates for display grouping.
 - External read-only access is via **Bearer tokens** with scopes and parish restrictions.
 - Admin (superadmin) manages parishes, locations, users, and tokens.
-- UI includes JSON import/export for weekly schedules.
+- UI includes JSON import/export for weekly schedules using legacy-style payloads (`season` + `schedule`).
 
 ## Repository layout
 - `convex/` — Convex schema + server functions (queries/mutations).
@@ -80,7 +80,7 @@ POST `/api/setup` with JSON body:
 - `GET /api/weeks?date=YYYY-MM-DD&parish=<slug|id>`
 - `GET /api/days?date=YYYY-MM-DD&parish=<slug|id>`
 - `GET /api/location-schedules/{slug}?date=YYYY-MM-DD&parish=<slug|id>`
-- `POST /api/schedules` — import weekly schedule (requires signed-in user)
+- `POST /api/schedules` — import weekly schedule (accepts legacy `schedule` payload or normalized `days`)
 - Admin:
   - `/api/parishes`, `/api/locations`, `/api/users`, `/api/tokens`
 

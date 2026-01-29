@@ -104,7 +104,7 @@ function normalizePayload(payload: any) {
       weekLabel: payload.season || "",
       days: payload.schedule.map((day: any) => ({
         dayName: day.day,
-        date: day.date,
+        date: convertDateToIso(day.date),
         info: day.info || "",
         locations: (day.locations || []).map((location: any) => ({
           locationName: location.name,
@@ -114,6 +114,39 @@ function normalizePayload(payload: any) {
     };
   }
   return payload;
+}
+
+function convertDateToIso(value: string) {
+  if (!value) {
+    return "";
+  }
+  const trimmed = value.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    return trimmed;
+  }
+  const compact = trimmed.replace(/\s+/g, "");
+  const parts = compact.split(".");
+  if (parts.length >= 3) {
+    const day = parts[0].padStart(2, "0");
+    const month = parts[1].padStart(2, "0");
+    const year = parts[2];
+    return `${year}-${month}-${day}`;
+  }
+  return trimmed;
+}
+
+function convertIsoToDisplay(value: string) {
+  if (!value) {
+    return "";
+  }
+  const parts = value.split("-");
+  if (parts.length === 3) {
+    const year = parts[0];
+    const month = String(Number(parts[1]));
+    const day = String(Number(parts[2]));
+    return `${day}.${month}.${year}`;
+  }
+  return value;
 }
 
 function buildFromWeek(
@@ -161,17 +194,18 @@ function buildFromWeek(
   };
 }
 
-function buildPayload(builder: BuilderState) {
+function buildPayload(builder: BuilderState, locations: Location[]) {
+  const locationMap = new Map(locations.map((location) => [location._id, location.name]));
   return {
-    weekLabel: builder.weekLabel || null,
-    days: builder.days.map((day) => ({
-      date: day.date,
-      dayName: day.dayName,
+    season: builder.weekLabel || null,
+    schedule: builder.days.map((day) => ({
+      day: day.dayName,
+      date: convertIsoToDisplay(day.date),
       info: day.info || null,
       locations: day.locations
         .filter((location) => location.locationId)
         .map((location) => ({
-          locationId: location.locationId,
+          name: location.locationId ? locationMap.get(location.locationId) || "" : "",
           events: location.events.map((event) => ({
             type: event.type,
             time: event.time,
@@ -197,7 +231,7 @@ export function DashboardClient({
   const [builder, setBuilder] = useState<BuilderState>(() =>
     buildFromWeek(initialWeek, initialLocations, weekDate)
   );
-  const [jsonText, setJsonText] = useState(JSON.stringify(buildPayload(builder), null, 2));
+  const [jsonText, setJsonText] = useState(JSON.stringify(buildPayload(builder, locations), null, 2));
   const [message, setMessage] = useState<{ type: "success" | "error" | "info"; text: string } | null>(
     null
   );
@@ -219,8 +253,8 @@ export function DashboardClient({
   );
 
   useEffect(() => {
-    setJsonText(JSON.stringify(buildPayload(builder), null, 2));
-  }, [builder]);
+    setJsonText(JSON.stringify(buildPayload(builder, locations), null, 2));
+  }, [builder, locations]);
 
   useEffect(() => {
     const stored = typeof window !== "undefined" ? window.localStorage.getItem("locale") : null;
@@ -281,10 +315,21 @@ export function DashboardClient({
       }
       const mapped = parsed.days.map((day: any) => ({
         dayName: day.dayName,
-        date: day.date,
+        date: convertDateToIso(day.date),
         info: day.info || "",
         locations: (day.locations || []).map((loc: any) => ({
-          locationId: loc.locationId || null,
+          locationId:
+            loc.locationId ||
+            (loc.locationSlug
+              ? locations.find((item) => item.slug === loc.locationSlug)?._id
+              : null) ||
+            (loc.locationName || loc.name
+              ? locations.find(
+                  (item) =>
+                    item.name.toLowerCase() ===
+                    String(loc.locationName || loc.name).toLowerCase()
+                )?._id
+              : null),
           events: (loc.events || []).map((event: any) => ({
             type: event.type || "holy-mass",
             time: event.time || "",
@@ -310,7 +355,7 @@ export function DashboardClient({
       const response = await fetch("/api/schedules", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ parish: selectedParishId, ...buildPayload(builder) })
+        body: JSON.stringify({ parish: selectedParishId, ...buildPayload(builder, locations) })
       });
       if (!response.ok) {
         throw new Error((await response.json()).message || "Failed to save schedule");

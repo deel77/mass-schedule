@@ -29,3 +29,4 @@ Then visit `http://localhost:3000`.
 - The UI lives in `src/components/DashboardClient.tsx` and `src/components/SettingsClient.tsx`.
 - Translations live in `src/lib/i18n.ts` and the locale is stored in `localStorage`.
 - Convex functions are in `convex/`.
+- JSON import/export uses the legacy `season` + `schedule` payload; `/api/schedules` accepts both legacy and normalized formats.
