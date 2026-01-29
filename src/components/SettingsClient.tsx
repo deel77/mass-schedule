@@ -361,9 +361,7 @@ export function SettingsClient({ isSuperadmin }: { isSuperadmin: boolean }) {
         <AppHeader
           locale={locale}
           onLocaleChange={setLocale}
-          overline={t(locale, "settingsOverline", "Administration")}
           title={t(locale, "settingsTitle", "Settings")}
-          subtitle={t(locale, "manageSubtitle", "Manage parishes, locations, users, and external access tokens.")}
         />
 
         {status ? (

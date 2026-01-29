@@ -9,9 +9,7 @@ import { Locale, t } from "@/lib/i18n";
 type AppHeaderProps = {
   locale: Locale;
   onLocaleChange: (locale: Locale) => void;
-  overline?: string;
   title: string;
-  subtitle?: string;
   actions?: ReactNode;
   showSignOut?: boolean;
   workspace?: {
@@ -25,9 +23,7 @@ type AppHeaderProps = {
 export function AppHeader({
   locale,
   onLocaleChange,
-  overline,
   title,
-  subtitle,
   actions,
   showSignOut = true,
   workspace
@@ -36,20 +32,16 @@ export function AppHeader({
   const isSettings = pathname?.startsWith("/settings");
 
   return (
-    <header className="rounded-[28px] border border-neutral-200 bg-white/90 p-4 shadow-sm">
+    <header className="rounded-[24px] border border-neutral-200 bg-white/90 px-4 py-3 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-neutral-900 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-sm">
-              Om
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-neutral-400">
-                {t(locale, "appTitle", "Program OMSI")}
-              </p>
-              <p className="text-sm font-semibold text-neutral-900">Convex</p>
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-neutral-900 text-[10px] font-semibold uppercase tracking-[0.3em] text-white shadow-sm">
+            Om
           </div>
+          <span className="text-lg font-semibold text-neutral-900">{title}</span>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
           <nav className="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-2 py-1 text-xs font-semibold uppercase tracking-wide text-neutral-500 shadow-sm">
             <Link
               href="/"
@@ -84,9 +76,6 @@ export function AppHeader({
               </select>
             </div>
           ) : null}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
           {actions ? <div className="flex flex-wrap items-center gap-3">{actions}</div> : null}
           <div className="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-3 py-2 text-xs text-neutral-500 shadow-sm">
             <span className="font-semibold uppercase tracking-wide">{t(locale, "language", "Language")}</span>
@@ -107,16 +96,6 @@ export function AppHeader({
               {t(locale, "signOut", "Sign out")}
             </button>
           ) : null}
-        </div>
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-end justify-between gap-4 border-t border-neutral-200 pt-4">
-        <div>
-          {overline ? (
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">{overline}</p>
-          ) : null}
-          <h1 className="mt-2 text-3xl font-semibold text-neutral-900">{title}</h1>
-          {subtitle ? <p className="mt-2 text-sm text-neutral-500">{subtitle}</p> : null}
         </div>
       </div>
     </header>

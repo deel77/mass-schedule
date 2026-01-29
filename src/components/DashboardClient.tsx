@@ -461,9 +461,7 @@ export function DashboardClient({
           <AppHeader
             locale={locale}
             onLocaleChange={setLocale}
-            overline={t(locale, "weeklySchedule", "Weekly Schedule")}
             title={selectedParish?.name || t(locale, "weeklySchedule", "Schedule")}
-            subtitle={`${t(locale, "welcomeBack", "Welcome back")}, ${userName}.`}
             workspace={
               parishes.length > 1
                 ? {
@@ -474,8 +472,34 @@ export function DashboardClient({
                   }
                 : undefined
             }
-            actions={
-              <>
+          />
+
+          <div className="rounded-[28px] border border-neutral-200 bg-white/80 p-5 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <label className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">
+                  {t(locale, "weekLabel", "Week")}
+                </label>
+                <input
+                  type="date"
+                  value={weekDate}
+                  onChange={(event) => setWeekDate(event.target.value)}
+                  className="rounded-full border border-neutral-200 px-3 py-2 text-sm"
+                />
+                <button
+                  onClick={() => loadWeek(weekDate)}
+                  disabled={loadingWeek}
+                  className="rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white"
+                >
+                  {loadingWeek ? t(locale, "loading", "Loading...") : t(locale, "load", "Load")}
+                </button>
+                {weekData?.week.label ? (
+                  <span className="rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-700">
+                    {weekData.week.label}
+                  </span>
+                ) : null}
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
                 <button
                   onClick={() => shiftWeek(-7)}
                   className="rounded-full border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-600 transition hover:border-neutral-400"
@@ -494,35 +518,7 @@ export function DashboardClient({
                 >
                   {t(locale, "editSchedule", "Edit schedule")}
                 </button>
-              </>
-            }
-          />
-
-          <div className="rounded-[28px] border border-neutral-200 bg-white/80 p-5 shadow-sm">
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-3">
-                <label className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">
-                  {t(locale, "weekLabel", "Week")}
-                </label>
-                <input
-                  type="date"
-                  value={weekDate}
-                  onChange={(event) => setWeekDate(event.target.value)}
-                  className="rounded-full border border-neutral-200 px-3 py-2 text-sm"
-                />
-                <button
-                  onClick={() => loadWeek(weekDate)}
-                  disabled={loadingWeek}
-                  className="rounded-full bg-neutral-900 px-4 py-2 text-sm font-semibold text-white"
-                >
-                  {loadingWeek ? t(locale, "loading", "Loading...") : t(locale, "load", "Load")}
-                </button>
               </div>
-              {weekData?.week.label ? (
-                <span className="rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-700">
-                  {weekData.week.label}
-                </span>
-              ) : null}
             </div>
           </div>
 
