@@ -134,11 +134,11 @@ function buildFromWeek(
   const days: BuilderDay[] = DAY_NAMES_SK.map((dayName, index) => {
     const existing = scheduleMap.get(dayName);
     const date = existing?.date || toIso(new Date(base.getTime() + index * 86400000));
-    const locationsForDay: BuilderLocation[] = (existing?.locations || []).map((loc) => {
+    const locationsForDay: BuilderLocation[] = (existing?.locations || []).map((loc: any) => {
       const match = lookup.get(loc.slug) || locations.find((item) => item.name === loc.name);
       return {
         locationId: match?._id || null,
-        events: (loc.events || []).map((event) => ({
+        events: (loc.events || []).map((event: any) => ({
           type: event.type,
           time: event.time,
           intention: event.intention || "",

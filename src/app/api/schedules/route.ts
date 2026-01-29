@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAuthContext, requireParishAccess } from "@/lib/apiAuth";
+import { getAuthContext } from "@/lib/apiAuth";
 import { convexMutation, convexQuery } from "@/lib/convexClient";
 import { resolveParishId } from "@/lib/resolveParish";
 
@@ -40,10 +40,6 @@ export async function POST(request: Request) {
   if (!parishId) {
     return NextResponse.json({ message: "Parish not found" }, { status: 404 });
   }
-  if (context.type === "token" && !requireParishAccess(context, parishId)) {
-    return NextResponse.json({ message: "Forbidden" }, { status: 403 });
-  }
-
   try {
     const result = await convexMutation("schedules:importWeek", {
       actorId: context.userId,

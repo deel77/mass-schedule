@@ -17,6 +17,11 @@ npx convex dev
 npm run dev
 ```
 
+## Build
+```bash
+npm run build
+```
+
 Then visit `http://localhost:3000`.
 
 ## Notes

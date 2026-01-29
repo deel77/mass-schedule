@@ -1,4 +1,5 @@
 import { mutation, query } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
 import { v } from "convex/values";
 import { assertParishAccess } from "./lib/access";
 import { EVENT_TYPES } from "./lib/constants";
@@ -110,7 +111,7 @@ async function formatWeek(ctx: any, parishId: string, date: string, onlyLocation
     }
 
     const locationsPayload = Array.from(grouped.values())
-      .sort((a, b) => {
+      .sort((a: any, b: any) => {
         if (a.location.displayOrder !== b.location.displayOrder) {
           return a.location.displayOrder - b.location.displayOrder;
         }
@@ -121,7 +122,9 @@ async function formatWeek(ctx: any, parishId: string, date: string, onlyLocation
         name: group.location.name,
         slug: group.location.slug,
         events: group.events
-          .sort((a, b) => eventSortKey(a.timeText).localeCompare(eventSortKey(b.timeText)))
+          .sort((a: any, b: any) =>
+            eventSortKey(a.timeText).localeCompare(eventSortKey(b.timeText))
+          )
           .map((event: any) => ({
             type: event.eventType,
             time: event.timeText,
@@ -202,7 +205,7 @@ export const getDayView = query({
     }
 
     const locationsPayload = Array.from(grouped.values())
-      .sort((a, b) => {
+      .sort((a: any, b: any) => {
         if (a.location.displayOrder !== b.location.displayOrder) {
           return a.location.displayOrder - b.location.displayOrder;
         }
@@ -213,7 +216,9 @@ export const getDayView = query({
         name: group.location.name,
         slug: group.location.slug,
         events: group.events
-          .sort((a, b) => eventSortKey(a.timeText).localeCompare(eventSortKey(b.timeText)))
+          .sort((a: any, b: any) =>
+            eventSortKey(a.timeText).localeCompare(eventSortKey(b.timeText))
+          )
           .map((event: any) => ({
             type: event.eventType,
             time: event.timeText,
@@ -350,7 +355,7 @@ export const importWeek = mutation({
       }
     }
 
-    const locationOrderMap = new Map<string, number>();
+    const locationOrderMap = new Map<Id<"locations">, number>();
 
     for (const dayPayload of args.days) {
       const dateIso = normalizeDateString(dayPayload.date);
@@ -376,6 +381,10 @@ export const importWeek = mutation({
           info: dayPayload.info?.trim() || undefined,
           weekLabelId: weekLabel?._id
         });
+      }
+
+      if (!day) {
+        throw new Error("Day record could not be created.");
       }
 
       const existingEvents = await ctx.db
