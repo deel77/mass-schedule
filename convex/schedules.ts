@@ -316,7 +316,9 @@ export const getDayView = query({
     const normalized = normalizeDateString(args.date);
     const day = await ctx.db
       .query("days")
-      .withIndex("by_parish_date", (q) => q.eq("parishId", args.parishId).eq("date", normalized))
+      .withIndex("by_parish_date", (q: any) =>
+        q.eq("parishId", args.parishId).eq("date", normalized)
+      )
       .unique();
     if (!day) {
       return null;
