@@ -295,6 +295,11 @@ export function DashboardClient({
     }
   };
 
+  const handleParishChange = (nextParishId: string) => {
+    setSelectedParishId(nextParishId);
+    loadWeek(weekDate, nextParishId);
+  };
+
   const shiftWeek = (offset: number) => {
     const base = getWeekStart(weekDate);
     base.setDate(base.getDate() + offset);
@@ -459,6 +464,16 @@ export function DashboardClient({
             overline={t(locale, "weeklySchedule", "Weekly Schedule")}
             title={selectedParish?.name || t(locale, "weeklySchedule", "Schedule")}
             subtitle={`${t(locale, "welcomeBack", "Welcome back")}, ${userName}.`}
+            workspace={
+              parishes.length > 1
+                ? {
+                    label: t(locale, "parishLabel", "Parish"),
+                    value: selectedParishId,
+                    options: parishes.map((parish) => ({ value: parish._id, label: parish.name })),
+                    onChange: handleParishChange
+                  }
+                : undefined
+            }
             actions={
               <>
                 <button
@@ -503,27 +518,6 @@ export function DashboardClient({
                   {loadingWeek ? t(locale, "loading", "Loading...") : t(locale, "load", "Load")}
                 </button>
               </div>
-              {parishes.length > 1 ? (
-                <div className="flex items-center gap-3">
-                  <label className="text-xs font-semibold uppercase tracking-[0.3em] text-neutral-400">
-                    {t(locale, "parishLabel", "Parish")}
-                  </label>
-                  <select
-                    value={selectedParishId}
-                    onChange={(event) => {
-                      setSelectedParishId(event.target.value);
-                      loadWeek(weekDate, event.target.value);
-                    }}
-                    className="rounded-full border border-neutral-200 px-3 py-2 text-sm"
-                  >
-                    {parishes.map((parish) => (
-                      <option key={parish._id} value={parish._id}>
-                        {parish.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : null}
               {weekData?.week.label ? (
                 <span className="rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-700">
                   {weekData.week.label}
