@@ -1,4 +1,4 @@
-import { mutation, query } from "convex/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { assertSuperadmin } from "./lib/permissions";
 import { slugify } from "./lib/slugs";

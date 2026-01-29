@@ -1,4 +1,4 @@
-import { mutation, query } from "convex/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { assertParishAccess } from "./lib/access";
 import { EVENT_TYPES } from "./lib/constants";

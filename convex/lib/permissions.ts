@@ -1,4 +1,4 @@
-import { query } from "convex/server";
+import { query } from "../_generated/server";
 import { v } from "convex/values";
 
 export async function assertSuperadmin(ctx: { db: any }, userId: string) {
